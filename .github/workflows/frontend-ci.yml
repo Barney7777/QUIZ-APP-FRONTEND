@@ -47,7 +47,7 @@ jobs:
         ls
 
     - name: Archive build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: dist
         path: ./quiz-app/dist # path relative to the working directory of your job
