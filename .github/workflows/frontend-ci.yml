@@ -48,9 +48,6 @@ jobs:
 
     - name: Archive build artifacts
       uses: actions/upload-artifact@v3
-      run:
-        pwd
-        ls
       with:
         name: dist
         path: dist
