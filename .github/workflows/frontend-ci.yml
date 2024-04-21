@@ -64,19 +64,31 @@ jobs:
           -Dsonar.sources=src/
           -Dsonar.verbose=true
     
+    - name: install trivy
+      run: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
     - name: Trivy FS Scan
-      uses: aquasecurity/trivy-action@master
+      run: trivy fs --format table -o trivy-results.html .
+    - name: Upload Trivy scan reslts to github security tab
+      uses: github/upload-artifact@v3
       with:
-        scan-type: "fs"
-        ignore-unfixed: true
-        format: "sarif"
-        output: trivy-results.sarif
-        severity: "CRITICAL"
+        name: trivy-results
+        path: trivy-results.html
+
     
-    - name: Upload Trivy scan reslts to github security tab 
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: trivy-results.sarif
+    # - name: Trivy FS Scan
+    #   uses: aquasecurity/trivy-action@master
+    #   with:
+    #     scan-type: "fs"
+    #     ignore-unfixed: true
+    #     format: "sarif"
+    #     output: trivy-results.sarif
+    #     severity: "CRITICAL"
+    
+    # - name: Upload Trivy scan reslts to github security tab 
+    #   uses: github/codeql-action/upload-sarif@v3
+    #   with:
+    #     sarif_file: trivy-results.sarif
   
   deploy:
     needs: build-test-scan
