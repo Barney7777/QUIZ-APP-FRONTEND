@@ -91,6 +91,8 @@ jobs:
   deploy:
     needs: build-test-scan
     runs-on: ubuntu-latest
+    env:
+      S3_BUCKET_NAME: barneywang.click-dev
 
     steps:
     - name: Download build artifacts
@@ -107,7 +109,17 @@ jobs:
         aws-region: ap-southeast-2
     
     - name: Sync artifacts to s3
-      run: aws s3 sync quiz-app/dist s3://barneywang.click-dev
+      run: aws s3 sync quiz-app/dist s3://${{ env.S3_BUCKET_NAME }}
+    
+    - name: Send a Slack Notification
+      if: always()
+      uses: act10ns/slack@v1
+      with:
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+        channel: 'react-app'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     
 
