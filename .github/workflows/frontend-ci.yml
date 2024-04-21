@@ -98,6 +98,7 @@ jobs:
     
     - name: Sync artifacts to s3
       run: aws s3 sync dist s3://barneywang.click-dev
+      
     
 
 
