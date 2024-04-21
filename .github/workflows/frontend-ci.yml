@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dist
-        path: ./dist # path relative to the working directory of your job
+        # path: ./dist # path relative to the working directory of your job
     
     # - name: Setup Sonar-scanner
     #   uses: warchant/setup-sonar-scanner@v8
@@ -93,7 +93,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: dist
-        path: ./dist
+        # path: ./dist
 
     - name: Set up AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -103,7 +103,7 @@ jobs:
         aws-region: ap-southeast-2
     
     - name: Sync artifacts to s3
-      run: aws s3 sync ./dist s3://barneywang.click-dev
+      run: aws s3 sync dist s3://barneywang.click-dev
 
     
 
