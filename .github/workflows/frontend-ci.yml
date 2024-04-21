@@ -70,10 +70,10 @@ jobs:
     - name: Trivy FS Scan
       run: trivy fs --format table -o trivy-results.html .
     - name: Upload Trivy scan reslts to github security tab
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: trivy-results
-        path: ../trivy-results.html
+        path: ./quiz-app/trivy-results.html
   
   deploy:
     needs: build-test-scan
@@ -81,7 +81,7 @@ jobs:
     steps:
 
     - name: Download build artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: dist
         path: dist
