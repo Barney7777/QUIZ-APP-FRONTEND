@@ -31,14 +31,15 @@ jobs:
         architecture: ${{ matrix.architecture }}
     
     - name: Install project dependencies
-      run: |
+      run: 
         npm i
-        npm run lint
-        npm run prettier
-        npm test
-        pwd
-      env: 
-        CI: true
+    
+    - name: lint code
+      run: npm run lint
+    - name: Format code
+      run: npm run prettier
+    - name: Unit test
+      run: npm test
     
     - name: build artifacts
       run: |
