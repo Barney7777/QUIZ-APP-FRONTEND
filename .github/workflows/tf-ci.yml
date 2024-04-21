@@ -31,6 +31,12 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v4
     
+    # - name: Terraform security scan
+    #   uses: aquasecurity/tfsec-actions@v1.0.0
+    #   with: 
+    #     working_directory: ./iac-code
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    
     - name: Install Terraform
       uses: hashicorp/setup-terraform@v3
     
