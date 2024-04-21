@@ -46,7 +46,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: dist
+        path: ./quiz-app/dist
     
     - name: Setup Sonar-scanner
       uses: warchant/setup-sonar-scanner@v8
@@ -57,7 +57,7 @@ jobs:
         _GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
-        projecBaseDir: quiz-app
+        projecBaseDir: ./quiz-app
         args: >
           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
