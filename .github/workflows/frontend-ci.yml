@@ -31,7 +31,8 @@ jobs:
         architecture: ${{ matrix.architecture }}
     
     - name: Cache dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4
+      id: cache-node-modules
       with:
         path: quiz-app/node_modules
         key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
