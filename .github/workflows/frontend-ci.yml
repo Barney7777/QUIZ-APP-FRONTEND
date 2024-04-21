@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: ./quiz-app/dist
+        path: ./quiz-app/dist # path relative to the working directory of your job
     
     # - name: Setup Sonar-scanner
     #   uses: warchant/setup-sonar-scanner@v8
@@ -83,6 +83,9 @@ jobs:
   deploy:
     needs: build-test-scan
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./quiz-app
 
 
     steps:
