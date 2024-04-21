@@ -57,7 +57,7 @@ jobs:
         _GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
-        projecBaseDir: ./quiz-app
+        projectBaseDir: ./quiz-app
         args: >
           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
@@ -98,7 +98,7 @@ jobs:
     
     - name: Sync artifacts to s3
       run: aws s3 sync dist s3://barneywang.click-dev
-      
+
     
 
 
