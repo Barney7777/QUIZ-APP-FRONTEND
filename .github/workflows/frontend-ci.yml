@@ -93,7 +93,7 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: dist
-        path: ./quiz-app/dist
+        path: ./dist
 
     - name: Set up AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
