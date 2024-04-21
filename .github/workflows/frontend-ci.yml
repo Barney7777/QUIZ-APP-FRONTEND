@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: dist
-        path: dist
+        path: ./quiz-app/dist
     
     # - name: Setup Sonar-scanner
     #   uses: warchant/setup-sonar-scanner@v8
