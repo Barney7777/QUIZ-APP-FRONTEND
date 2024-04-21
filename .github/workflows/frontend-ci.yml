@@ -50,7 +50,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: dist
-        path: dist # path relative to the working directory of your job
+        path: /dist # path relative to the working directory of your job
     
     # - name: Setup Sonar-scanner
     #   uses: warchant/setup-sonar-scanner@v8
