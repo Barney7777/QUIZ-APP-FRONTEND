@@ -1,125 +1,130 @@
-# name: React APP Pipeline
+name: Frontend Pipeline
 
-# on:
-#   push:
-#     branches:
-#     - main
-#   pull_request:
-#     branches:
-#     - main
+on:
+  push:
+    branches:
+    - main
 
-# jobs:
-#   build-test-scan:
-#     runs-on: ubuntu-latest
-#     defaults:
-#       run:
-#         working-directory: ./quiz-app
-#     strategy:
-#       matrix:
-#         node-version: [20.x]
-#         architecture: [x64]
-#     steps:
-#     - name: Checkout
-#       uses: actions/checkout@v4
-#       with:
-#         fetch-depth: 0
-    
-#     - name: Use Node.js ${{ matrix.node-version }} - ${{ matrix.architecture }}
-#       uses: actions/setup-node@v4
-#       with:
-#         node-version: ${{ matrix.node-version }}
-#         architecture: ${{ matrix.architecture }}
-    
-#     - name: Cache dependencies
-#       uses: actions/cache@v4
-#       id: cache-node-modules
-#       with:
-#         path: quiz-app/node_modules
-#         key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
-#     - name: Install project dependencies
-#       if: steps.cache.outputs.cache-hit != 'true'
-#       run: 
-#         npm i
-    
-#     - name: lint code
-#       run: npm run lint
-#     - name: Format code
-#       run: npm run prettier
-#     - name: Unit test
-#       run: npm test
-    
-#     - name: build artifacts
-#       run: |
-#         npm run build
-#         pwd
-#         ls
+  pull_request:
+    branches:
+    - main
 
-#     - name: Archive build artifacts
-#       uses: actions/upload-artifact@v4
-#       with:
-#         name: dist
-#         path: ./quiz-app/dist
-    
-#     - name: Setup Sonar-scanner
-#       uses: warchant/setup-sonar-scanner@v8
+env:
+  AWS_DEFAULT_REGION: ap-southeast-2
+  S3_BUCKET_NAME: barneywang.click-dev
 
-#     - name: SAST with SonarCloud 
-#       uses: sonarsource/sonarcloud-github-action@master
-#       env:
-#         _GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#       with:
-#         projectBaseDir: ./quiz-app
-#         args: >
-#           -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
-#           -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
-#           -Dsonar.sources=src/
-#           -Dsonar.verbose=true
-    
-#     - name: install trivy
-#       run: |
-#         curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-#     - name: Trivy FS Scan
-#       run: trivy fs --format table -o trivy-results.html .
 
-#     - name: Archive Trivy scan reslts
-#       uses: actions/upload-artifact@v4
-#       with:
-#         name: trivy-results
-#         path: ./quiz-app/trivy-results.html
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-latest
+    # defaults:
+    #   run:
+    #     working-directory: ./
+    strategy:
+      matrix:
+        node-version: [20.x]
+        architecture: [x64]
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Use Node.js ${{ matrix.node-version }} - ${{ matrix.architecture }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        architecture: ${{ matrix.architecture }}
+    
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      id: cache-node-modules
+      with:
+        path: quiz-app/node_modules
+        key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+    - name: Install project dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: 
+        npm i
+    
+    - name: lint code
+      run: npm run lint
+    - name: Format code
+      run: npm run prettier
+    - name: Unit test
+      run: npm test
+    
+    - name: build artifacts
+      run: |
+        npm run build
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist
+    
+    - name: Setup Sonar-scanner
+      uses: warchant/setup-sonar-scanner@v8
+
+    - name: SAST with SonarCloud 
+      uses: sonarsource/sonarcloud-github-action@master
+      env:
+        _GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        # projectBaseDir: .
+        args: >
+          -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+          -Dsonar.host.url=${{ secrets.SONAR_URL }}
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+          -Dsonar.sources=src/
+          -Dsonar.verbose=true
+    
+    - name: install trivy
+      run: |
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+    - name: Trivy FS Scan
+      run: |
+        echo "Scanning File"
+        trivy fs --format table -o trivy-fs-results.html .
+    - name: Archive Trivy scan reslts
+      uses: actions/upload-artifact@v4
+      with:
+        name: trivy-fs-results.html
+        path: trivy-fs-results.html
   
-#   deploy:
-#     needs: build-test-scan
-#     runs-on: ubuntu-latest
-#     env:
-#       S3_BUCKET_NAME: barneywang.click-dev
+  deploy:
+    needs: build-test-scan
+    runs-on: ubuntu-latest
 
-#     steps:
-#     - name: Download build artifacts
-#       uses: actions/download-artifact@v4
-#       with:
-#         name: dist
-#         path: quiz-app/dist
+    steps:
+    - name: Download artifacts(builds)
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: dist
 
-#     - name: Set up AWS credentials
-#       uses: aws-actions/configure-aws-credentials@v4
-#       with:
-#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#         aws-region: ap-southeast-2
+    - name: Set up AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ AWS_DEFAULT_REGION }}
     
-#     - name: Sync artifacts to s3
-#       run: aws s3 sync quiz-app/dist s3://${{ env.S3_BUCKET_NAME }}
+    - name: Sync artifacts to s3
+      run: aws s3 sync quiz-app/dist s3://${{ env.S3_BUCKET_NAME }}
     
-#     - name: Send a Slack Notification
-#       if: always()
-#       uses: act10ns/slack@v2.0.0
-#       with:
-#         status: ${{ job.status }}
-#         steps: ${{ toJson(steps) }}
-#         channel: 'react-app'
-#       env:
-#         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    - name: Send a Slack Notification
+      if: always()
+      uses: act10ns/slack@v2.0.0
+      with:
+        status: ${{ job.status }}
+        steps: ${{ toJson(steps) }}
+        channel: 'react-app'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
     
 
