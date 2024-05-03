@@ -114,7 +114,7 @@ jobs:
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
     
     - name: Sync artifacts to s3
-      run: aws s3 sync quiz-app/dist s3://${{ env.S3_BUCKET_NAME }}
+      run: aws s3 sync dist s3://${{ env.S3_BUCKET_NAME }}
     
     - name: Send a Slack Notification
       if: always()
