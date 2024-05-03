@@ -40,7 +40,7 @@ jobs:
       uses: actions/cache@v4
       id: cache-node-modules
       with:
-        path: quiz-app/node_modules
+        path: ./node_modules
         key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
     - name: Install project dependencies
       if: steps.cache.outputs.cache-hit != 'true'
