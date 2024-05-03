@@ -1,4 +1,4 @@
-simport { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import "./Quiz.css";
 
 const Quiz = () => {
