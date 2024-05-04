@@ -12,6 +12,9 @@ on:
 env:
   AWS_DEFAULT_REGION: ap-southeast-2
   S3_BUCKET_NAME: barneywang.click-dev
+  AWS_CF_DISTRIBUTION_ID: E15SHMZLYC6BC1
+
+
 
 
 jobs:
@@ -116,6 +119,15 @@ jobs:
     - name: Sync artifacts to s3
       id: deploy
       run: aws s3 sync dist s3://${{ env.S3_BUCKET_NAME }}
+    
+    - name: Create Cloudfront Cache Invalidation
+      uses: chetan/invalidate-cloudfront-action@master
+      env:
+        DISTRIBUTION: ${{ env.AWS_CF_DISTRIBUTION_ID }}
+        PATHS: "/*"
+        AWS_REGION: ${{env.AWS_DEFAULT_REGION}}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     
     - name: Send a Slack Notification
       if: always()
